@@ -7,10 +7,127 @@ datasource db {
 }
 
 model Procedure {
-  id                Int    @id @default(autoincrement())
-  name              String
-  modality          String
-  clinics           String
-  bookingCategories String
-  notes             String
+  id              String  @id
+  name            String
+  displayName     String?
+  service         String?
+  procedureType   String?
+  bodyPart        String?
+  defaultModality String?
+  isBookable      Boolean @default(true)
+  status          String?
+  internalNotes   String?
+
+  procedureClinics           ProcedureClinic[]
+  procedureRadiologists      ProcedureRadiologist[]
+  procedureBookingCategories ProcedureBookingCategory[]
+  rules                      ProcedureRule[]
+  aliases                    ProcedureAlias[]
+}
+
+model Clinic {
+  id           String  @id
+  name         String
+  abbreviation String?
+  city         String?
+
+  procedureClinics           ProcedureClinic[]
+  radiologistClinics         RadiologistClinic[]
+  procedureBookingCategories ProcedureBookingCategory[]
+}
+
+model Radiologist {
+  id     String  @id
+  name   String
+  status String?
+  notes  String?
+
+  procedureRadiologists ProcedureRadiologist[]
+  radiologistClinics    RadiologistClinic[]
+}
+
+model Modality {
+  id    String  @id
+  name  String
+  notes String?
+
+  bookingCategories BookingCategory[]
+  procedureClinics  ProcedureClinic[]
+}
+
+model BookingCategory {
+  id         String  @id
+  name       String
+  modalityId String?
+  notes      String?
+
+  modality Modality? @relation(fields: [modalityId], references: [id])
+
+  procedureBookingCategories ProcedureBookingCategory[]
+}
+
+model ProcedureClinic {
+  id          String  @id
+  procedureId String
+  clinicId    String
+  modalityId  String?
+  status      String?
+  notes       String?
+
+  procedure Procedure @relation(fields: [procedureId], references: [id])
+  clinic    Clinic    @relation(fields: [clinicId], references: [id])
+  modality  Modality? @relation(fields: [modalityId], references: [id])
+}
+
+model ProcedureRadiologist {
+  id            String  @id
+  procedureId   String
+  radiologistId String
+  status        String?
+  notes         String?
+
+  procedure   Procedure   @relation(fields: [procedureId], references: [id])
+  radiologist Radiologist @relation(fields: [radiologistId], references: [id])
+}
+
+model ProcedureBookingCategory {
+  id                String  @id
+  procedureId       String
+  bookingCategoryId String
+  clinicId          String?
+  isPrimary         Boolean @default(false)
+  notes             String?
+
+  procedure       Procedure       @relation(fields: [procedureId], references: [id])
+  bookingCategory BookingCategory @relation(fields: [bookingCategoryId], references: [id])
+  clinic          Clinic?         @relation(fields: [clinicId], references: [id])
+}
+
+model RadiologistClinic {
+  id            String  @id
+  radiologistId String
+  clinicId      String
+  status        String?
+  notes         String?
+
+  radiologist Radiologist @relation(fields: [radiologistId], references: [id])
+  clinic      Clinic      @relation(fields: [clinicId], references: [id])
+}
+
+model ProcedureRule {
+  id          String  @id
+  procedureId String
+  ruleType    String?
+  ruleText    String
+  notes       String?
+
+  procedure Procedure @relation(fields: [procedureId], references: [id])
+}
+
+model ProcedureAlias {
+  id          String @id
+  procedureId String
+  alias       String
+
+  procedure Procedure @relation(fields: [procedureId], references: [id])
 }
