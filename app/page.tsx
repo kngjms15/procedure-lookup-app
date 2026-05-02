@@ -186,66 +186,68 @@ export default function Home() {
               </div>
 
               <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-                <section className="rounded-xl border border-slate-200">
-                  <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold">
-                    <div>Clinic</div>
-                    <div>Booking Categories</div>
-                    <div>Protocol / Notes</div>
-                  </div>
-                  <div className="max-h-72 overflow-y-auto">
-                    {procedure.clinics.map((clinic, index) => {
-                      const categoriesForClinic =
-                        procedure.bookingCategories.filter(
-                          (category) => category.clinic === clinic.clinic,
-                        );
+                <div className="w-full overflow-x-auto">
+                  <section className="min-w-[760px] overflow-hidden rounded-xl border border-slate-200">
+                    <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold">
+                      <div>Clinic</div>
+                      <div>Booking Categories</div>
+                      <div>Protocol / Notes</div>
+                    </div>
+                    <div className="max-h-72 overflow-y-auto">
+                      {procedure.clinics.map((clinic, index) => {
+                        const categoriesForClinic =
+                          procedure.bookingCategories.filter(
+                            (category) => category.clinic === clinic.clinic,
+                          );
 
-                      return (
-                        <div
-                          key={index}
-                          className="sticky top-0 z-10 grid grid-cols-[200px_1fr_1fr] border-b bg-slate-50 px-4 py-2 text-sm font-semibold"
-                        >
-                          <div>
-                            <span
-                              className={`${getClinicChipClass(
-                                clinic.city,
-                              )} rounded-full px-2 py-1 text-xs font-medium`}
-                            >
-                              {clinic.clinic}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2">
-                            {categoriesForClinic.length > 0 ? (
-                              categoriesForClinic.map(
-                                (category, categoryIndex) => (
-                                  <span
-                                    key={categoryIndex}
-                                    className={`rounded-full border px-2 py-1 text-xs font-medium ${
-                                      category.isPrimary
-                                        ? "border-yellow-200 bg-yellow-100 text-yellow-800"
-                                        : "border-slate-200 bg-slate-100 text-slate-700"
-                                    }`}
-                                  >
-                                    {category.name}
-                                    {category.isPrimary ? " ⭐" : ""}
-                                  </span>
-                                ),
-                              )
-                            ) : (
-                              <span className="text-slate-400">
-                                No category mapped
+                        return (
+                          <div
+                            key={index}
+                            className="sticky top-0 z-10 grid grid-cols-[200px_1fr_1fr] border-b bg-slate-50 px-4 py-2 text-sm font-semibold"
+                          >
+                            <div>
+                              <span
+                                className={`${getClinicChipClass(
+                                  clinic.city,
+                                )} rounded-full px-2 py-1 text-xs font-medium`}
+                              >
+                                {clinic.clinic}
                               </span>
-                            )}
-                          </div>
+                            </div>
 
-                          <div className="text-slate-600">
-                            {clinic.notes || "—"}
+                            <div className="flex flex-wrap gap-2">
+                              {categoriesForClinic.length > 0 ? (
+                                categoriesForClinic.map(
+                                  (category, categoryIndex) => (
+                                    <span
+                                      key={categoryIndex}
+                                      className={`border px-2 py-1 text-xs font-medium ${
+                                        category.isPrimary
+                                          ? "border-yellow-200 bg-[#0af410] text-yellow-800"
+                                          : "border-slate-200 bg-[#a27dfa] text-slate-800"
+                                      }`}
+                                    >
+                                      {category.name}
+                                      {category.isPrimary ? " ⭐" : ""}
+                                    </span>
+                                  ),
+                                )
+                              ) : (
+                                <span className="text-slate-400">
+                                  No category mapped
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="text-slate-600">
+                              {clinic.notes || "—"}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
+                        );
+                      })}
+                    </div>
+                  </section>
+                </div>
 
                 <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <h3 className="mb-2 font-semibold text-slate-800">
