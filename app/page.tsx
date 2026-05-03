@@ -187,11 +187,11 @@ export default function Home() {
 
               <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
                 <div className="w-full overflow-x-auto">
-                  <section className="min-w-[760px] overflow-hidden rounded-xl border border-slate-200">
+                  <section className="min-w-190 overflow-hidden rounded-xl border border-slate-200">
                     <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold">
                       <div>Clinic</div>
                       <div>Booking Categories</div>
-                      <div>Protocol / Notes</div>
+                      <div>Protocol / Clinic Notes</div>
                     </div>
                     <div className="max-h-72 overflow-y-auto">
                       {procedure.clinics.map((clinic, index) => {
