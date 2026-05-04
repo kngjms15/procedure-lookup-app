@@ -46,6 +46,7 @@ export async function GET() {
       name: pbc.bookingCategory.name,
       clinic: pbc.clinic?.name || null,
       isPrimary: pbc.isPrimary,
+      bookingCategoryColor: pbc.bookingCategory.bookingCategoryColor || null,
     })),
 
     radiologists: p.procedureRadiologists.map((pr) => ({

@@ -80,23 +80,38 @@ async function main() {
 
   console.log("🧠 Importing Radiologists...");
   for (const r of radiologists) {
-    await prisma.radiologist.create({
-      data: {
+    await prisma.radiologist.upsert({
+      where: { id: String(r.RadiologistID) },
+      update: {
+        name: r.RadiologistName,
+        status: val(r.Status),
+        notes: val(r.HomeClinicCode),
+        genderColor: r.GenderColor || null,
+      },
+      create: {
         id: String(r.RadiologistID),
         name: r.RadiologistName,
         status: val(r.Status),
         notes: val(r.HomeClinicCode),
+        genderColor: r.GenderColor || null,
       },
     });
   }
 
   console.log("📦 Importing Booking Categories...");
   for (const b of bookingCategories) {
-    await prisma.bookingCategory.create({
-      data: {
+    await prisma.bookingCategory.upsert({
+      where: { id: String(b.BookingCategoryID) },
+      update: {
+        name: b.BookingCategoryName,
+        modalityId: val(b.ModalityID)?.toString() || null,
+        bookingCategoryColor: b.BookingCategoryColor || null,
+      },
+      create: {
         id: String(b.BookingCategoryID),
         name: b.BookingCategoryName,
-        modalityId: val(b.ModalityID),
+        modalityId: val(b.ModalityID)?.toString() || null,
+        bookingCategoryColor: b.BookingCategoryColor || null,
       },
     });
   }

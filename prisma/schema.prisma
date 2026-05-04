@@ -37,10 +37,11 @@ model Clinic {
 }
 
 model Radiologist {
-  id     String  @id
-  name   String
-  status String?
-  notes  String?
+  id          String  @id
+  name        String
+  status      String?
+  notes       String?
+  genderColor String?
 
   procedureRadiologists ProcedureRadiologist[]
   radiologistClinics    RadiologistClinic[]
@@ -60,6 +61,7 @@ model BookingCategory {
   name       String
   modalityId String?
   notes      String?
+  bookingCategoryColor String?
 
   modality Modality? @relation(fields: [modalityId], references: [id])
 

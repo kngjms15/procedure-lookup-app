@@ -13,6 +13,7 @@ type BookingCategoryItem = {
   name: string;
   clinic: string | null;
   isPrimary: boolean;
+  bookingCategoryColor: string | null;
 };
 
 type RadiologistItem = {
@@ -221,11 +222,16 @@ export default function Home() {
                                   (category, categoryIndex) => (
                                     <span
                                       key={categoryIndex}
-                                      className={`border px-2 py-1 text-xs font-medium ${
-                                        category.isPrimary
-                                          ? "border-yellow-200 bg-[#0af410] text-yellow-800"
-                                          : "border-slate-200 bg-[#a27dfa] text-slate-800"
-                                      }`}
+                                      className="border px-2 py-1 text-xs font-medium"
+                                      style={{
+                                        backgroundColor:
+                                          category.bookingCategoryColor ||
+                                          "#e2e8f0",
+                                        borderColor:
+                                          category.bookingCategoryColor ||
+                                          "#cbd5e1",
+                                        color: "#1e293b",
+                                      }}
                                     >
                                       {category.name}
                                       {category.isPrimary ? " ⭐" : ""}
