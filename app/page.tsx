@@ -102,60 +102,83 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-100 p-8 text-slate-900">
       <div className="mx-auto max-w-6xl">
-        <h1 className="mb-2 text-3xl font-bold">Procedure Library</h1>
+        <div className="sticky top-0 z-30 -mx-8 mb-6 border-b border-slate-200 bg-slate-100/95 px-8 pb-4 pt-8 backdrop-blur">
+          <h1 className="mb-2 text-3xl font-bold">Procedure Library</h1>
 
-        <p className="mb-6 text-slate-600">
-          Search procedures and view clinics, booking categories, and
-          radiologist availability.
-        </p>
+          <p className="mb-6 text-slate-600">
+            Search procedures and view clinics, booking categories, and
+            radiologist availability.
+          </p>
 
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select
-            value={selectedClinic}
-            onChange={(e) => setSelectedClinic(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option value="">All Clinics</option>
-            {allClinics.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          <div className="mb-4 hidden grid-cols-1 gap-4 md:grid md:grid-cols-3">
+            <select
+              value={selectedClinic}
+              onChange={(e) => setSelectedClinic(e.target.value)}
+              className="rounded border p-2"
+            >
+              <option value="">All Clinics</option>
+              {allClinics.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
 
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option value="">All Categories</option>
-            {allCategories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="rounded border p-2"
+            >
+              <option value="">All Categories</option>
+              {allCategories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
 
-          <select
-            value={selectedRadiologist}
-            onChange={(e) => setSelectedRadiologist(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option value="">All Radiologists</option>
-            {allRadiologists.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
+            <select
+              value={selectedRadiologist}
+              onChange={(e) => setSelectedRadiologist(e.target.value)}
+              className="rounded border p-2"
+            >
+              <option value="">All Radiologists</option>
+              {allRadiologists.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                className="w-full rounded-xl border border-slate-300 bg-white p-4 pr-12 text-lg shadow-sm"
+                placeholder="Search procedure..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className="rounded-xl border border-slate-300 bg-white px-4 font-medium shadow-sm md:hidden"
+            >
+              Filters
+            </button>
+          </div>
         </div>
-
-        <input
-          className="mb-6 w-full rounded-xl border border-slate-300 bg-white p-4 text-lg shadow-sm"
-          placeholder="Search procedure..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
 
         <div className="space-y-5">
           {filtered.map((procedure) => (
@@ -205,7 +228,7 @@ export default function Home() {
                         return (
                           <div
                             key={index}
-                            className="sticky top-0 z-10 grid grid-cols-[200px_1fr_1fr] border-b bg-slate-50 px-4 py-2 text-sm font-semibold"
+                            className="grid grid-cols-[200px_1fr_1fr] border-b bg-white px-4 py-2 text-sm"
                           >
                             <div>
                               <span
