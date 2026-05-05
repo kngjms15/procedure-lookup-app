@@ -19,6 +19,7 @@ type BookingCategoryItem = {
 type RadiologistItem = {
   name: string;
   status: string | null;
+  genderColor: string | null;
 };
 
 type Procedure = {
@@ -264,7 +265,10 @@ export default function Home() {
                       procedure.radiologists.map((r, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between"
+                          className="flex items-center justify-between border-l-[3px] pl-2"
+                          style={{
+                            borderLeftColor: r.genderColor || "#cbd5e1",
+                          }}
                         >
                           <span className="font-medium">{r.name}</span>
 
@@ -276,7 +280,7 @@ export default function Home() {
                                   : "text-red-600"
                               }`}
                             >
-                              ● {r.status}
+                              • {r.status}
                             </span>
                           )}
                         </div>
