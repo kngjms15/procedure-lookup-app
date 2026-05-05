@@ -40,6 +40,7 @@ export default function Home() {
   const [expandedProcedureId, setExpandedProcedureId] = useState<string | null>(
     null,
   );
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     async function loadProcedures() {
@@ -173,12 +174,94 @@ export default function Home() {
 
             <button
               type="button"
+              onClick={() => setShowFilters(true)}
               className="rounded-xl border border-slate-300 bg-white px-4 font-medium shadow-sm md:hidden"
             >
               Filters
             </button>
           </div>
         </div>
+
+        {showFilters && (
+          <div className="fixed inset-0 z-50 bg-black/40 md:hidden">
+            <div className="absolute bottom-0 w-full rounded-t-2xl bg-white p-5 shadow-xl">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Filters</h2>
+
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="rounded-full px-3 py-1 text-slate-500 hover:bg-slate-100"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <select
+                  value={selectedClinic}
+                  onChange={(e) => setSelectedClinic(e.target.value)}
+                  className="w-full rounded border p-3"
+                >
+                  <option value="">All Clinics</option>
+                  {allClinics.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full rounded border p-3"
+                >
+                  <option value="">All Categories</option>
+                  {allCategories.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedRadiologist}
+                  onChange={(e) => setSelectedRadiologist(e.target.value)}
+                  className="w-full rounded border p-3"
+                >
+                  <option value="">All Radiologists</option>
+                  {allRadiologists.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedClinic("");
+                    setSelectedCategory("");
+                    setSelectedRadiologist("");
+                  }}
+                  className="rounded-xl border border-slate-300 bg-white p-3 font-medium"
+                >
+                  Clear
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="rounded-xl bg-slate-900 p-3 font-medium text-white"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-5">
           {filtered.map((procedure) => (
