@@ -302,62 +302,65 @@ export default function Home() {
                       <div>Protocol / Clinic Notes</div>
                     </div>
                     <div className="max-h-72 overflow-y-auto">
-                      {procedure.clinics.map((clinic, index) => {
-                        const categoriesForClinic =
-                          procedure.bookingCategories.filter(
-                            (category) => category.clinic === clinic.clinic,
-                          );
+                      {procedure.clinics
+                        .slice()
+                        .sort((a, b) => a.clinic.localeCompare(b.clinic))
+                        .map((clinic, index) => {
+                          const categoriesForClinic =
+                            procedure.bookingCategories.filter(
+                              (category) => category.clinic === clinic.clinic,
+                            );
 
-                        return (
-                          <div
-                            key={index}
-                            className="grid grid-cols-[200px_1fr_1fr] border-b bg-white px-4 py-2 text-sm"
-                          >
-                            <div>
-                              <span
-                                className={`${getClinicChipClass(
-                                  clinic.city,
-                                )} rounded-full px-2 py-1 text-xs font-medium`}
-                              >
-                                {clinic.clinic}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-wrap gap-2">
-                              {categoriesForClinic.length > 0 ? (
-                                categoriesForClinic.map(
-                                  (category, categoryIndex) => (
-                                    <span
-                                      key={categoryIndex}
-                                      className="border px-2 py-1 text-xs font-medium"
-                                      style={{
-                                        backgroundColor:
-                                          category.bookingCategoryColor ||
-                                          "#e2e8f0",
-                                        borderColor:
-                                          category.bookingCategoryColor ||
-                                          "#cbd5e1",
-                                        color: "#1e293b",
-                                      }}
-                                    >
-                                      {category.name}
-                                      {category.isPrimary ? " ⭐" : ""}
-                                    </span>
-                                  ),
-                                )
-                              ) : (
-                                <span className="text-slate-400">
-                                  No category mapped
+                          return (
+                            <div
+                              key={index}
+                              className="grid grid-cols-[200px_1fr_1fr] border-b bg-white px-4 py-2 text-sm"
+                            >
+                              <div>
+                                <span
+                                  className={`${getClinicChipClass(
+                                    clinic.city,
+                                  )} rounded-full px-2 py-1 text-xs font-medium`}
+                                >
+                                  {clinic.clinic}
                                 </span>
-                              )}
-                            </div>
+                              </div>
 
-                            <div className="text-slate-600">
-                              {clinic.notes || "—"}
+                              <div className="flex flex-wrap gap-2">
+                                {categoriesForClinic.length > 0 ? (
+                                  categoriesForClinic.map(
+                                    (category, categoryIndex) => (
+                                      <span
+                                        key={categoryIndex}
+                                        className="border px-2 py-1 text-xs font-medium"
+                                        style={{
+                                          backgroundColor:
+                                            category.bookingCategoryColor ||
+                                            "#e2e8f0",
+                                          borderColor:
+                                            category.bookingCategoryColor ||
+                                            "#cbd5e1",
+                                          color: "#1e293b",
+                                        }}
+                                      >
+                                        {category.name}
+                                        {category.isPrimary ? " ⭐" : ""}
+                                      </span>
+                                    ),
+                                  )
+                                ) : (
+                                  <span className="text-slate-400">
+                                    No category mapped
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="text-slate-600">
+                                {clinic.notes || "—"}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                     </div>
                   </section>
                 </div>
@@ -366,31 +369,34 @@ export default function Home() {
                   <h3 className="mb-2 font-semibold text-slate-800">
                     Radiologists
                   </h3>
-                  <div className="space-y-1 text-sm text-slate-700">
+                  <div className="max-h-90 overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
                     {procedure.radiologists.length > 0 ? (
-                      procedure.radiologists.map((r, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between border-l-[3px] pl-2"
-                          style={{
-                            borderLeftColor: r.genderColor || "#cbd5e1",
-                          }}
-                        >
-                          <span className="font-medium">{r.name}</span>
+                      procedure.radiologists
+                        .slice()
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((r, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between border-l-[3px] pl-2"
+                            style={{
+                              borderLeftColor: r.genderColor || "#cbd5e1",
+                            }}
+                          >
+                            <span className="font-medium">{r.name}</span>
 
-                          {r.status && (
-                            <span
-                              className={`text-xs font-medium ${
-                                r.status.toLowerCase() === "yes"
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              • {r.status}
-                            </span>
-                          )}
-                        </div>
-                      ))
+                            {r.status && (
+                              <span
+                                className={`text-xs font-medium ${
+                                  r.status.toLowerCase() === "yes"
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                • {r.status}
+                              </span>
+                            )}
+                          </div>
+                        ))
                     ) : (
                       <p className="text-slate-400">No radiologists mapped</p>
                     )}
