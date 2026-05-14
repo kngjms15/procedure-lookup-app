@@ -19,6 +19,7 @@ type BookingCategoryItem = {
 type RadiologistItem = {
   name: string;
   status: string | null;
+  notes: string | null;
   genderColor: string | null;
 };
 
@@ -377,22 +378,16 @@ export default function Home() {
                         .map((r, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between border-l-[3px] pl-2"
+                            className="flex items-center justify-between border-l-[3px] border-b border-b-gray-200 pl-2"
                             style={{
                               borderLeftColor: r.genderColor || "#cbd5e1",
                             }}
                           >
                             <span className="font-medium">{r.name}</span>
 
-                            {r.status && (
-                              <span
-                                className={`text-xs font-medium ${
-                                  r.status.toLowerCase() === "yes"
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                }`}
-                              >
-                                • {r.status}
+                            {r.notes && (
+                              <span className="ml-2 text-xs text-slate-500 italic">
+                                {r.notes}
                               </span>
                             )}
                           </div>

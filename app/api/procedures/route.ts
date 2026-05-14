@@ -52,6 +52,7 @@ export async function GET() {
     radiologists: p.procedureRadiologists.map((pr) => ({
       name: pr.radiologist.name,
       status: pr.status,
+      notes: pr.notes,
       genderColor: pr.radiologist.genderColor || null,
     })),
   }));
