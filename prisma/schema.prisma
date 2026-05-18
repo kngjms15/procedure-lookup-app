@@ -57,10 +57,10 @@ model Modality {
 }
 
 model BookingCategory {
-  id         String  @id
-  name       String
-  modalityId String?
-  notes      String?
+  id                   String  @id
+  name                 String
+  modalityId           String?
+  notes                String?
   bookingCategoryColor String?
 
   modality Modality? @relation(fields: [modalityId], references: [id])
@@ -127,9 +127,12 @@ model ProcedureRule {
 }
 
 model ProcedureAlias {
-  id          String @id
+  id          String  @id
   procedureId String
-  alias       String
+  aliasName   String
+  aliasType   String?
 
   procedure Procedure @relation(fields: [procedureId], references: [id])
+
+  @@index([aliasName])
 }

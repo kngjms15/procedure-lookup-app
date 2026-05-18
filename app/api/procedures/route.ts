@@ -11,6 +11,8 @@ const prisma = new PrismaClient({ adapter });
 export async function GET() {
   const procedures = await prisma.procedure.findMany({
     include: {
+      aliases: true,
+
       procedureClinics: {
         include: {
           clinic: true,
@@ -34,6 +36,13 @@ export async function GET() {
     id: p.id,
     name: p.name,
     displayName: p.displayName,
+    bodyPart: p.bodyPart,
+    procedureType: p.procedureType,
+
+    aliases: p.aliases.map((alias) => ({
+      aliasName: alias.aliasName,
+      aliasType: alias.aliasType,
+    })),
 
     clinics: p.procedureClinics.map((pc) => ({
       clinic: pc.clinic.name,

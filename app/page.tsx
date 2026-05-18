@@ -23,10 +23,18 @@ type RadiologistItem = {
   genderColor: string | null;
 };
 
+type AliasItem = {
+  aliasName: string;
+  aliasType: string | null;
+};
+
 type Procedure = {
   id: string;
   name: string;
   displayName: string | null;
+  bodyPart: string | null;
+  procedureType: string | null;
+  aliases: AliasItem[];
   clinics: ClinicItem[];
   bookingCategories: BookingCategoryItem[];
   radiologists: RadiologistItem[];
@@ -46,6 +54,13 @@ export default function Home() {
   useEffect(() => {
     async function loadProcedures() {
       const res = await fetch("/api/procedures");
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("API error:", res.status, errorText);
+        return;
+      }
+
       const data = await res.json();
       setProcedures(data);
     }
@@ -54,7 +69,24 @@ export default function Home() {
   }, []);
 
   const filtered = procedures.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const searchableContent = [
+      p.name,
+      p.displayName || "",
+      p.bodyPart || "",
+      p.procedureType || "",
+
+      ...(p.aliases ?? []).map((a) => a.aliasName),
+
+      ...p.clinics.map((c) => c.clinic),
+
+      ...p.bookingCategories.map((b) => b.name),
+
+      ...p.radiologists.map((r) => r.name),
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch = searchableContent.includes(search.toLowerCase());
 
     const matchesClinic = selectedClinic
       ? p.clinics.some((c) => c.clinic === selectedClinic)
