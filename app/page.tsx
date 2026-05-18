@@ -294,19 +294,29 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+              <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_280px]">
                 <div className="w-full overflow-x-auto">
-                  <section className="min-w-190 overflow-hidden rounded-xl border border-slate-200">
-                    <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold">
+                  <section className="h-full min-w-190 overflow-hidden rounded-xl border border-slate-200">
+                    <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                       <div>Clinic</div>
                       <div>Booking Categories</div>
                       <div>Protocol / Clinic Notes</div>
                     </div>
-                    <div className="max-h-72 overflow-y-auto">
-                      {procedure.clinics
-                        .slice()
-                        .sort((a, b) => a.clinic.localeCompare(b.clinic))
-                        .map((clinic, index) => {
+                    <div className="max-h-90 overflow-y-auto">
+                      {[...procedure.clinics]
+                        .sort((a, b) => {
+                          const cityCompare = (a.city ?? "").localeCompare(
+                            b.city ?? "",
+                          );
+                          if (cityCompare !== 0) return cityCompare;
+
+                          return a.clinic.localeCompare(b.clinic);
+                        })
+                        .map((clinic, index, array) => {
+                          const previousClinic = array[index - 1];
+                          const showCityHeader =
+                            index === 0 || previousClinic.city !== clinic.city;
+
                           const categoriesForClinic =
                             procedure.bookingCategories.filter(
                               (category) => category.clinic === clinic.clinic,
@@ -366,8 +376,8 @@ export default function Home() {
                   </section>
                 </div>
 
-                <section className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <h3 className="mb-2 font-semibold text-slate-800">
+                <section className="h-full overflow-hidden rounded-xl border border-slate-200">
+                  <h3 className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                     Radiologists
                   </h3>
                   <div className="max-h-90 overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
