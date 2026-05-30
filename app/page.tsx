@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type ClinicItem = {
   clinic: string;
@@ -43,13 +43,10 @@ type Procedure = {
 export default function Home() {
   const [procedures, setProcedures] = useState<Procedure[]>([]);
   const [search, setSearch] = useState("");
-  const [selectedClinic, setSelectedClinic] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedRadiologist, setSelectedRadiologist] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [expandedProcedureId, setExpandedProcedureId] = useState<string | null>(
     null,
   );
-  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     async function loadProcedures() {
@@ -68,47 +65,52 @@ export default function Home() {
     loadProcedures();
   }, []);
 
-  const filtered = procedures.filter((p) => {
-    const searchableContent = [
-      p.name,
-      p.displayName || "",
-      p.bodyPart || "",
-      p.procedureType || "",
+  const normalizedSearch = search.trim().toLowerCase();
 
-      ...(p.aliases ?? []).map((a) => a.aliasName),
+  const filtered = useMemo(() => {
+    return procedures.filter((p) => {
+      const searchableContent = [
+        p.name,
+        p.displayName || "",
+        p.bodyPart || "",
+        p.procedureType || "",
+        ...(p.aliases ?? []).map((a) => a.aliasName),
+        ...p.clinics.map((c) => c.clinic),
+        ...p.bookingCategories.map((b) => b.name),
+        ...p.radiologists.map((r) => r.name),
+      ]
+        .join(" ")
+        .toLowerCase();
 
-      ...p.clinics.map((c) => c.clinic),
+      return searchableContent.includes(normalizedSearch);
+    });
+  }, [procedures, normalizedSearch]);
 
-      ...p.bookingCategories.map((b) => b.name),
+  const suggestions = useMemo(() => {
+    if (!normalizedSearch) return [];
 
-      ...p.radiologists.map((r) => r.name),
-    ]
-      .join(" ")
-      .toLowerCase();
+    return procedures
+      .filter((p) => {
+        const procedureFields = [
+          p.name,
+          p.displayName || "",
+          p.bodyPart || "",
+          p.procedureType || "",
+        ]
+          .join(" ")
+          .toLowerCase();
 
-    const matchesSearch = searchableContent.includes(search.toLowerCase());
+        const aliasMatch = (p.aliases ?? []).some((a) =>
+          a.aliasName.toLowerCase().includes(normalizedSearch),
+        );
 
-    const matchesClinic = selectedClinic
-      ? p.clinics.some((c) => c.clinic === selectedClinic)
-      : true;
-
-    const matchesCategory = selectedCategory
-      ? p.bookingCategories.some((b) => b.name === selectedCategory)
-      : true;
-
-    const matchesRadiologist = selectedRadiologist
-      ? p.radiologists.some((r) => r.name === selectedRadiologist)
-      : true;
-
-    return (
-      matchesSearch && matchesClinic && matchesCategory && matchesRadiologist
-    );
-  });
+        return procedureFields.includes(normalizedSearch) || aliasMatch;
+      })
+      .slice(0, 8);
+  }, [procedures, normalizedSearch]);
 
   function getClinicChipClass(city: string | null) {
-    if (!city) {
-      return "bg-gray-100 text-gray-700 border border-gray-200";
-    }
+    if (!city) return "bg-gray-100 text-gray-700 border border-gray-200";
 
     if (city.toLowerCase() === "calgary") {
       return "bg-emerald-100 text-emerald-800 border border-emerald-200";
@@ -121,17 +123,11 @@ export default function Home() {
     return "bg-gray-100 text-gray-700 border border-gray-200";
   }
 
-  const allClinics = Array.from(
-    new Set(procedures.flatMap((p) => p.clinics.map((c) => c.clinic))),
-  );
-
-  const allCategories = Array.from(
-    new Set(procedures.flatMap((p) => p.bookingCategories.map((b) => b.name))),
-  );
-
-  const allRadiologists = Array.from(
-    new Set(procedures.flatMap((p) => p.radiologists.map((r) => r.name))),
-  );
+  function getMatchingAlias(procedure: Procedure) {
+    return procedure.aliases?.find((a) =>
+      a.aliasName.toLowerCase().includes(normalizedSearch),
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-100 p-8 text-slate-900">
@@ -144,157 +140,69 @@ export default function Home() {
             radiologist availability.
           </p>
 
-          <div className="mb-4 hidden grid-cols-1 gap-4 md:grid md:grid-cols-3">
-            <select
-              value={selectedClinic}
-              onChange={(e) => setSelectedClinic(e.target.value)}
-              className="rounded border p-2"
-            >
-              <option value="">All Clinics</option>
-              {allClinics.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+          <div className="relative">
+            <input
+              className="w-full rounded-xl border border-slate-300 bg-white p-4 pr-12 text-lg shadow-sm"
+              placeholder="Search procedure or alias..."
+              value={search}
+              onFocus={() => setIsSearchFocused(true)}
+              onChange={(e) => setSearch(e.target.value)}
+              onBlur={() => {
+                setTimeout(() => setIsSearchFocused(false), 150);
+              }}
+            />
 
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="rounded border p-2"
-            >
-              <option value="">All Categories</option>
-              {allCategories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >
+                ✕
+              </button>
+            )}
 
-            <select
-              value={selectedRadiologist}
-              onChange={(e) => setSelectedRadiologist(e.target.value)}
-              className="rounded border p-2"
-            >
-              <option value="">All Radiologists</option>
-              {allRadiologists.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </div>
+            {isSearchFocused && suggestions.length > 0 && (
+              <div className="absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                {suggestions.map((procedure) => {
+                  const matchingAlias = getMatchingAlias(procedure);
 
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                className="w-full rounded-xl border border-slate-300 bg-white p-4 pr-12 text-lg shadow-sm"
-                placeholder="Search procedure..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+                  return (
+                    <button
+                      key={procedure.id}
+                      type="button"
+                      onMouseDown={() => {
+                        setSearch(procedure.name);
+                        setExpandedProcedureId(procedure.id);
+                      }}
+                      className="block w-full border-b border-slate-100 px-4 py-3 text-left hover:bg-slate-50"
+                    >
+                      <div className="font-medium text-slate-900">
+                        {procedure.name}
+                      </div>
 
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+                      {matchingAlias && (
+                        <div className="mt-1 text-xs text-slate-500">
+                          Alias: {matchingAlias.aliasName}
+                        </div>
+                      )}
 
-            <button
-              type="button"
-              onClick={() => setShowFilters(true)}
-              className="rounded-xl border border-slate-300 bg-white px-4 font-medium shadow-sm md:hidden"
-            >
-              Filters
-            </button>
+                      {procedure.bodyPart && (
+                        <div className="mt-1 text-xs text-slate-400">
+                          {procedure.bodyPart}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
-        {showFilters && (
-          <div className="fixed inset-0 z-50 bg-black/40 md:hidden">
-            <div className="absolute bottom-0 w-full rounded-t-2xl bg-white p-5 shadow-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Filters</h2>
-
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(false)}
-                  className="rounded-full px-3 py-1 text-slate-500 hover:bg-slate-100"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <select
-                  value={selectedClinic}
-                  onChange={(e) => setSelectedClinic(e.target.value)}
-                  className="w-full rounded border p-3"
-                >
-                  <option value="">All Clinics</option>
-                  {allClinics.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full rounded border p-3"
-                >
-                  <option value="">All Categories</option>
-                  {allCategories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={selectedRadiologist}
-                  onChange={(e) => setSelectedRadiologist(e.target.value)}
-                  className="w-full rounded border p-3"
-                >
-                  <option value="">All Radiologists</option>
-                  {allRadiologists.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedClinic("");
-                    setSelectedCategory("");
-                    setSelectedRadiologist("");
-                  }}
-                  className="rounded-xl border border-slate-300 bg-white p-3 font-medium"
-                >
-                  Clear
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(false)}
-                  className="rounded-xl bg-slate-900 p-3 font-medium text-white"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="mb-4 text-sm text-slate-500">
+          Showing {filtered.length} of {procedures.length} procedures
+        </div>
 
         <div className="space-y-5">
           {filtered.map((procedure) => (
@@ -305,14 +213,23 @@ export default function Home() {
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-xl font-semibold">{procedure.name}</h2>
+
                   {procedure.displayName && (
                     <p className="mt-1 text-sm text-slate-500">
                       Source: {procedure.displayName}
                     </p>
                   )}
+
+                  {procedure.aliases?.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-400">
+                      Aliases:{" "}
+                      {procedure.aliases.map((a) => a.aliasName).join(", ")}
+                    </p>
+                  )}
                 </div>
 
                 <button
+                  type="button"
                   onClick={() =>
                     setExpandedProcedureId(
                       expandedProcedureId === procedure.id
@@ -328,27 +245,25 @@ export default function Home() {
 
               <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_280px]">
                 <div className="w-full overflow-x-auto">
-                  <section className="h-full min-w-190 overflow-hidden rounded-xl border border-slate-200">
+                  <section className="h-full min-w-[760px] overflow-hidden rounded-xl border border-slate-200">
                     <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                       <div>Clinic</div>
                       <div>Booking Categories</div>
                       <div>Protocol / Clinic Notes</div>
                     </div>
-                    <div className="max-h-90 overflow-y-auto">
+
+                    <div className="max-h-[22rem] overflow-y-auto">
                       {[...procedure.clinics]
                         .sort((a, b) => {
                           const cityCompare = (a.city ?? "").localeCompare(
                             b.city ?? "",
                           );
+
                           if (cityCompare !== 0) return cityCompare;
 
                           return a.clinic.localeCompare(b.clinic);
                         })
-                        .map((clinic, index, array) => {
-                          const previousClinic = array[index - 1];
-                          const showCityHeader =
-                            index === 0 || previousClinic.city !== clinic.city;
-
+                        .map((clinic, index) => {
                           const categoriesForClinic =
                             procedure.bookingCategories.filter(
                               (category) => category.clinic === clinic.clinic,
@@ -356,7 +271,7 @@ export default function Home() {
 
                           return (
                             <div
-                              key={index}
+                              key={`${procedure.id}-${clinic.clinic}-${index}`}
                               className="grid grid-cols-[200px_1fr_1fr] border-b bg-white px-4 py-2 text-sm"
                             >
                               <div>
@@ -409,10 +324,11 @@ export default function Home() {
                 </div>
 
                 <section className="h-full overflow-hidden rounded-xl border border-slate-200">
-                  <h3 className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
+                  <h3 className="border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                     Radiologists
                   </h3>
-                  <div className="max-h-90 overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
+
+                  <div className="max-h-[22rem] overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
                     {procedure.radiologists.length > 0 ? (
                       procedure.radiologists
                         .slice()
@@ -420,7 +336,7 @@ export default function Home() {
                         .map((r, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between border-l-[3px] border-b border-b-gray-200 pl-2"
+                            className="flex items-center justify-between border-b border-b-gray-200 border-l-[3px] pl-2"
                             style={{
                               borderLeftColor: r.genderColor || "#cbd5e1",
                             }}
@@ -428,14 +344,16 @@ export default function Home() {
                             <span className="font-medium">{r.name}</span>
 
                             {r.notes && (
-                              <span className="ml-2 text-xs text-slate-500 italic">
+                              <span className="ml-2 text-xs italic text-slate-500">
                                 {r.notes}
                               </span>
                             )}
                           </div>
                         ))
                     ) : (
-                      <p className="text-slate-400">No radiologists mapped</p>
+                      <p className="p-3 text-slate-400">
+                        No radiologists mapped
+                      </p>
                     )}
                   </div>
                 </section>
@@ -444,6 +362,7 @@ export default function Home() {
               {expandedProcedureId === procedure.id && (
                 <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
                   <h3 className="font-semibold text-slate-900">Global Rules</h3>
+
                   <p className="mt-1 text-sm text-slate-600">
                     {procedure.displayName
                       ? `Source: ${procedure.displayName}`
@@ -453,6 +372,12 @@ export default function Home() {
               )}
             </div>
           ))}
+
+          {filtered.length === 0 && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+              No procedures found.
+            </div>
+          )}
         </div>
       </div>
     </main>

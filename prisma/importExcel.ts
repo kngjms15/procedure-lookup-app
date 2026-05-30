@@ -39,6 +39,7 @@ async function main() {
   const radiologists = readSheet(workbook, "Radiologists");
   const bookingCategories = readSheet(workbook, "BookingCategories");
   const procedures = readSheet(workbook, "Procedures");
+  const procedureAliases = readSheet(workbook, "ProcedureAliases");
   const procedureClinics = readSheet(workbook, "ProcedureClinics");
   const procedureRadiologists = readSheet(workbook, "ProcedureRadiologists");
   const procedureBookingCategories = readSheet(
@@ -50,6 +51,7 @@ async function main() {
   await prisma.procedureBookingCategory.deleteMany();
   await prisma.procedureRadiologist.deleteMany();
   await prisma.procedureClinic.deleteMany();
+  await prisma.procedureAlias.deleteMany();
   await prisma.bookingCategory.deleteMany();
   await prisma.procedure.deleteMany();
   await prisma.radiologist.deleteMany();
@@ -126,6 +128,18 @@ async function main() {
         procedureType: val(p.ProcedureType),
         bodyPart: val(p.BodyPart),
         internalNotes: val(p.BookedBy),
+      },
+    });
+  }
+
+  console.log("🏷️ Importing Procedure Aliases...");
+  for (const a of procedureAliases) {
+    await prisma.procedureAlias.create({
+      data: {
+        id: String(a.ProcedureAliasID),
+        procedureId: String(a.ProcedureID),
+        aliasName: String(a.AliasName),
+        aliasType: val(a.AliasType),
       },
     });
   }
