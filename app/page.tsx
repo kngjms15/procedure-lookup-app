@@ -38,6 +38,7 @@ type Procedure = {
   clinics: ClinicItem[];
   bookingCategories: BookingCategoryItem[];
   radiologists: RadiologistItem[];
+  internalNotes: string | null;
 };
 
 export default function Home() {
@@ -245,14 +246,14 @@ export default function Home() {
 
               <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_280px]">
                 <div className="w-full overflow-x-auto">
-                  <section className="h-full min-w-[760px] overflow-hidden rounded-xl border border-slate-200">
+                  <section className="h-full min-w-190 overflow-hidden rounded-xl border border-slate-200">
                     <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                       <div>Clinic</div>
                       <div>Booking Categories</div>
                       <div>Protocol / Clinic Notes</div>
                     </div>
 
-                    <div className="max-h-[22rem] overflow-y-auto">
+                    <div className="max-h-88 overflow-y-auto">
                       {[...procedure.clinics]
                         .sort((a, b) => {
                           const cityCompare = (a.city ?? "").localeCompare(
@@ -328,7 +329,7 @@ export default function Home() {
                     Radiologists
                   </h3>
 
-                  <div className="max-h-[22rem] overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
+                  <div className="max-h-88 overflow-y-auto space-y-1 pr-1 text-sm text-slate-700">
                     {procedure.radiologists.length > 0 ? (
                       procedure.radiologists
                         .slice()
@@ -364,8 +365,8 @@ export default function Home() {
                   <h3 className="font-semibold text-slate-900">Global Rules</h3>
 
                   <p className="mt-1 text-sm text-slate-600">
-                    {procedure.displayName
-                      ? `Source: ${procedure.displayName}`
+                    {procedure.internalNotes
+                      ? `Booked By: ${procedure.internalNotes}`
                       : "No global rules added yet."}
                   </p>
                 </div>

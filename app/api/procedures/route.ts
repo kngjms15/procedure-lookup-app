@@ -38,6 +38,7 @@ export async function GET() {
     displayName: p.displayName,
     bodyPart: p.bodyPart,
     procedureType: p.procedureType,
+    internalNotes: p.internalNotes,
 
     aliases: p.aliases.map((alias) => ({
       aliasName: alias.aliasName,
