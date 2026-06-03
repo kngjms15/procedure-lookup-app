@@ -15,7 +15,15 @@ export async function GET() {
 
       procedureClinics: {
         include: {
-          clinic: true,
+          clinic: {
+            include: {
+              radiologistClinics: {
+                include: {
+                  radiologist: true,
+                },
+              },
+            },
+          },
         },
       },
       procedureBookingCategories: {
@@ -47,9 +55,16 @@ export async function GET() {
 
     clinics: p.procedureClinics.map((pc) => ({
       clinic: pc.clinic.name,
+      abbreviation: pc.clinic.abbreviation,
       city: pc.clinic.city,
       modality: pc.modalityId,
       notes: pc.notes,
+
+      radiologists: pc.clinic.radiologistClinics.map((rc) => ({
+        name: rc.radiologist.name,
+        status: rc.status,
+        genderColor: rc.radiologist.genderColor || null,
+      })),
     })),
 
     bookingCategories: p.procedureBookingCategories.map((pbc) => ({

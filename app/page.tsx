@@ -4,9 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 
 type ClinicItem = {
   clinic: string;
+  abbreviation: string | null;
   city: string | null;
   modality: string | null;
   notes: string | null;
+  radiologists?: {
+    name: string;
+    status: string | null;
+    notes: string | null;
+    genderColor: string | null;
+  }[];
 };
 
 type BookingCategoryItem = {
@@ -286,9 +293,18 @@ export default function Home() {
                           >
                             <div>
                               <span
+                                title={`${clinic.clinic}\n${
+                                  clinic.radiologists?.length
+                                    ? clinic.radiologists
+                                        .map(
+                                          (rad: { name: string }) => rad.name,
+                                        )
+                                        .join("\n")
+                                    : "No radiologists listed for this clinic yet"
+                                }`}
                                 className={`${getClinicChipClass(
                                   clinic.city,
-                                )} rounded-full px-2 py-1 text-xs font-medium`}
+                                )} rounded-full px-2 py-1 text-xs font-medium hover:brightness-95`}
                               >
                                 {clinic.clinic}
                               </span>
@@ -386,22 +402,61 @@ export default function Home() {
                 key={procedure.id}
                 type="button"
                 onClick={() => setSelectedProcedure(procedure)}
-                className="block w-full rounded-lg border border-slate-200 bg-white p-5 text-left shadow-sm hover:bg-green-100"
+                className="flex w-full items-start justify-between gap-6 rounded-lg border border-slate-200 bg-white p-5 text-left shadow-sm hover:bg-green-100"
               >
-                <h2 className="text-xl font-semibold">{procedure.name}</h2>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-xl font-semibold">{procedure.name}</h2>
 
-                {procedure.displayName && (
-                  <p className="mt-1 text-sm text-slate-500">
-                    Source: {procedure.displayName}
-                  </p>
-                )}
+                  {procedure.displayName && (
+                    <p className="mt-1 text-sm text-slate-500">
+                      Source: {procedure.displayName}
+                    </p>
+                  )}
 
-                {procedure.aliases?.length > 0 && (
-                  <p className="mt-1 text-xs text-slate-400">
-                    Aliases:{" "}
-                    {procedure.aliases.map((a) => a.aliasName).join(", ")}
-                  </p>
-                )}
+                  {procedure.aliases?.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-400">
+                      Aliases:{" "}
+                      {procedure.aliases.map((a) => a.aliasName).join(", ")}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full mt-auto text-sm text-slate-500 md:w-130 md:shrink-0">
+                  {["Calgary", "Edmonton"].map((city) => {
+                    const cityClinics = procedure.clinics?.filter(
+                      (clinic) => clinic.city === city,
+                    );
+
+                    if (!cityClinics || cityClinics.length === 0) return null;
+
+                    return (
+                      <div key={city} className="mb-1 flex gap-1">
+                        <span className="font-semibold">
+                          {city === "Calgary" ? "YYC:" : "YEG:"}
+                        </span>
+
+                        <div className="flex flex-wrap gap-x-1">
+                          {cityClinics.map((clinic, index) => (
+                            <span
+                              key={`${clinic.abbreviation}-${index}`}
+                              title={`${clinic.clinic}\n${
+                                clinic.radiologists?.length
+                                  ? clinic.radiologists
+                                      .map((rad: { name: string }) => rad.name)
+                                      .join("\n")
+                                  : "No radiologists listed for this clinic yet"
+                              }`}
+                              className="cursor-help rounded px-1 hover:text-green-700"
+                            >
+                              {clinic.abbreviation}
+                              {index < cityClinics.length - 1 ? "," : ""}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </button>
             ))}
 

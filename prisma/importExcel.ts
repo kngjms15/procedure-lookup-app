@@ -46,11 +46,13 @@ async function main() {
     workbook,
     "ProcedureBookingCategories",
   );
+  const radiologistClinics = readSheet(workbook, "RadiologistClinics");
 
   console.log("🧹 Clearing DB...");
   await prisma.procedureBookingCategory.deleteMany();
   await prisma.procedureRadiologist.deleteMany();
   await prisma.procedureClinic.deleteMany();
+  await prisma.radiologistClinic.deleteMany();
   await prisma.procedureAlias.deleteMany();
   await prisma.bookingCategory.deleteMany();
   await prisma.procedure.deleteMany();
@@ -181,6 +183,19 @@ async function main() {
         clinicId: val(pbc.ClinicID),
         isPrimary: boolVal(pbc.IsPrimary),
         notes: val(pbc.Notes),
+      },
+    });
+  }
+
+  console.log("🔗 Importing RadiologistClinics...");
+  for (const rc of radiologistClinics) {
+    await prisma.radiologistClinic.create({
+      data: {
+        id: String(rc.RadiologistClinicID),
+        radiologistId: String(rc.RadiologistID),
+        clinicId: String(rc.ClinicID),
+        notes: val(rc.Notes),
+        status: val(rc.Status),
       },
     });
   }
