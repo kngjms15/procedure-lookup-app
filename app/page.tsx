@@ -110,6 +110,18 @@ export default function Home() {
       .slice(0, 8);
   }, [procedures, normalizedSearch]);
 
+  const sortedProcedures = [...filtered].sort((a, b) => {
+    const aStartsWithNumber = /^\d/.test(a.name);
+    const bStartsWithNumber = /^\d/.test(b.name);
+
+    // Numbers first
+    if (aStartsWithNumber && !bStartsWithNumber) return -1;
+    if (!aStartsWithNumber && bStartsWithNumber) return 1;
+
+    // Then alphabetical
+    return a.name.localeCompare(b.name);
+  });
+
   function getClinicChipClass(city: string | null) {
     if (!city) return "bg-gray-100 text-gray-700 border border-gray-200";
 
@@ -224,7 +236,7 @@ export default function Home() {
 
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4">
-                <h2 className="text-2xl font-bold">Procedure Name: {selectedProcedure.name}</h2>
+                <h2 className="text-2xl font-bold">{selectedProcedure.name}</h2>
 
                 {selectedProcedure.displayName && (
                   <p className="mt-1 text-sm text-slate-500">
@@ -369,7 +381,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map((procedure) => (
+            {sortedProcedures.map((procedure) => (
               <button
                 key={procedure.id}
                 type="button"
