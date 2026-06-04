@@ -129,6 +129,17 @@ export default function Home() {
     return a.name.localeCompare(b.name);
   });
 
+  const getClinicProcedureRadiologists = (clinic: any, procedure: any) => {
+    const procedureRadNames =
+      procedure.radiologists?.map((rad: { name: string }) => rad.name) ?? [];
+
+    return (
+      clinic.radiologists?.filter((rad: { name: string }) =>
+        procedureRadNames.includes(rad.name),
+      ) ?? []
+    );
+  };
+
   function getClinicChipClass(city: string | null) {
     if (!city) return "bg-gray-100 text-gray-700 border border-gray-200";
 
@@ -233,32 +244,35 @@ export default function Home() {
 
         {selectedProcedure ? (
           <div className="space-y-5">
-            <button
-              type="button"
-              onClick={() => setSelectedProcedure(null)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100"
-            >
-              ← Back to results
-            </button>
-
             <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold">{selectedProcedure.name}</h2>
+              <div className="mb-6 flex items-start justify-between gap-6">
+                <div className="mb-4">
+                  <h2 className="text-2xl font-bold">
+                    {selectedProcedure.name}
+                  </h2>
 
-                {selectedProcedure.displayName && (
-                  <p className="mt-1 text-sm text-slate-500">
-                    Source: {selectedProcedure.displayName}
-                  </p>
-                )}
+                  {selectedProcedure.displayName && (
+                    <p className="mt-1 text-sm text-slate-500">
+                      Source: {selectedProcedure.displayName}
+                    </p>
+                  )}
 
-                {selectedProcedure.aliases?.length > 0 && (
-                  <p className="mt-1 text-xs text-slate-400">
-                    Aliases:{" "}
-                    {selectedProcedure.aliases
-                      .map((a) => a.aliasName)
-                      .join(", ")}
-                  </p>
-                )}
+                  {selectedProcedure.aliases?.length > 0 && (
+                    <p className="mt-1 text-xs text-slate-400">
+                      Aliases:{" "}
+                      {selectedProcedure.aliases
+                        .map((a) => a.aliasName)
+                        .join(", ")}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProcedure(null)}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100"
+                >
+                  ← Back
+                </button>
               </div>
 
               <div className="grid items-start gap-4 lg:grid-cols-[1fr_280px]">
@@ -285,6 +299,11 @@ export default function Home() {
                           selectedProcedure.bookingCategories.filter(
                             (category) => category.clinic === clinic.clinic,
                           );
+                        const matchingRadiologists =
+                          getClinicProcedureRadiologists(
+                            clinic,
+                            selectedProcedure,
+                          );
 
                         return (
                           <div
@@ -294,13 +313,13 @@ export default function Home() {
                             <div>
                               <span
                                 title={`${clinic.clinic}\n${
-                                  clinic.radiologists?.length
-                                    ? clinic.radiologists
+                                  matchingRadiologists.length
+                                    ? matchingRadiologists
                                         .map(
                                           (rad: { name: string }) => rad.name,
                                         )
                                         .join("\n")
-                                    : "No radiologists listed for this clinic yet"
+                                    : "No radiologists listed for this procedure at this clinic yet"
                                 }`}
                                 className={`${getClinicChipClass(
                                   clinic.city,
@@ -436,22 +455,29 @@ export default function Home() {
                         </span>
 
                         <div className="flex flex-wrap gap-x-1">
-                          {cityClinics.map((clinic, index) => (
-                            <span
-                              key={`${clinic.abbreviation}-${index}`}
-                              title={`${clinic.clinic}\n${
-                                clinic.radiologists?.length
-                                  ? clinic.radiologists
-                                      .map((rad: { name: string }) => rad.name)
-                                      .join("\n")
-                                  : "No radiologists listed for this clinic yet"
-                              }`}
-                              className="cursor-help rounded px-1 hover:text-green-700"
-                            >
-                              {clinic.abbreviation}
-                              {index < cityClinics.length - 1 ? "," : ""}
-                            </span>
-                          ))}
+                          {cityClinics.map((clinic, index) => {
+                            const matchingRadiologists =
+                              getClinicProcedureRadiologists(clinic, procedure);
+
+                            return (
+                              <span
+                                key={`${clinic.abbreviation}-${index}`}
+                                title={`${clinic.clinic}\n${
+                                  matchingRadiologists.length
+                                    ? matchingRadiologists
+                                        .map(
+                                          (rad: { name: string }) => rad.name,
+                                        )
+                                        .join("\n")
+                                    : "No radiologists listed for this procedure at this clinic yet"
+                                }`}
+                                className="rounded px-1 hover:text-green-700"
+                              >
+                                {clinic.abbreviation}
+                                {index < cityClinics.length - 1 ? "," : ""}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
                     );
