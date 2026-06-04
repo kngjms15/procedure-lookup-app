@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRef } from "react";
 
 type ClinicItem = {
   clinic: string;
@@ -55,6 +56,9 @@ export default function Home() {
   const [selectedProcedure, setSelectedProcedure] = useState<Procedure | null>(
     null,
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadProcedures() {
@@ -72,6 +76,22 @@ export default function Home() {
 
     loadProcedures();
   }, []);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && selectedProcedure) {
+        setSelectedProcedure(null);
+        setIsSearchFocused(false);
+        inputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [selectedProcedure]);
 
   const normalizedSearch = search.trim().toLowerCase();
 
@@ -173,6 +193,7 @@ export default function Home() {
 
           <div className="relative">
             <input
+              ref={inputRef}
               className="w-full rounded-lg border border-slate-300 bg-white p-2 pr-12 text-md shadow-sm hover:bg-slate-100"
               placeholder="Search procedure or alias..."
               value={search}
@@ -180,6 +201,19 @@ export default function Home() {
               onChange={(e) => {
                 setSearch(e.target.value);
                 setSelectedProcedure(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setIsSearchFocused(false);
+                }
+
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  setSearch("");
+                  setSelectedProcedure(null);
+                  setIsSearchFocused(false);
+                }
               }}
               onBlur={() => {
                 setTimeout(() => setIsSearchFocused(false), 150);
@@ -199,7 +233,7 @@ export default function Home() {
               </button>
             )}
 
-            {isSearchFocused && suggestions.length > 0 && (
+            {isSearchFocused && search.trim() && suggestions.length > 0 && (
               <div className="absolute z-50 mt-2 max-h-auto w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
                 {suggestions.map((procedure) => {
                   const matchingAlias = getMatchingAlias(procedure);
