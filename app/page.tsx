@@ -6,6 +6,7 @@ import SearchBar from "../components/SearchBar";
 import ClinicChip from "../components/ClinicChip";
 import ProcedureCard from "../components/ProcedureCard";
 import ProcedureDetails from "../components/ProcedureDetails";
+import ProcedureList from "../components/ProcedureList";
 
 type ClinicItem = {
   clinic: string;
@@ -186,7 +187,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <div className="mx-auto max-w-6xl">
         <div className="sticky top-0 z-30 -mx-8 mb-2 border-b border-slate-200 bg-slate-50 px-8 pb-4 pt-4 backdrop-blur">
-          <h1 className="mb-2 text-3xl font-bold">Procedure Library</h1>
+          <h1 className="mb-1 text-2xl font-bold">Procedure Library</h1>
 
           <p className="mb-2 text-slate-600">
             Search procedures and view available clinics, booking categories,
@@ -216,22 +217,12 @@ export default function Home() {
             getClinicProcedureRadiologists={getClinicProcedureRadiologists}
           />
         ) : (
-          <div className="space-y-3">
-            {sortedProcedures.map((procedure) => (
-              <ProcedureCard
-                key={procedure.id}
-                procedure={procedure}
-                onSelect={setSelectedProcedure}
-                getClinicProcedureRadiologists={getClinicProcedureRadiologists}
-              />
-            ))}
-
-            {filtered.length === 0 && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
-                No procedures found.
-              </div>
-            )}
-          </div>
+          <ProcedureList
+            sortedProcedures={sortedProcedures}
+            filteredLength={filtered.length}
+            onSelectProcedure={setSelectedProcedure}
+            getClinicProcedureRadiologists={getClinicProcedureRadiologists}
+          />
         )}
       </div>
     </main>
