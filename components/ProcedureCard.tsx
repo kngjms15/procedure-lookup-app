@@ -15,7 +15,7 @@ export default function ProcedureCard({
     <button
       type="button"
       onClick={() => onSelect(procedure)}
-      className="flex w-full flex-col items-start gap-4 rounded-lg border border-slate-200 bg-white p-5 text-left shadow-sm hover:bg-green-100 md:flex-row md:justify-between md:gap-6"
+      className="flex w-full flex-col items-start gap-4 rounded-md border border-slate-500 bg-white p-5 text-left shadow-sm hover:bg-green-50 md:flex-row md:justify-between md:gap-6"
     >
       <div className="min-w-0 flex-1">
         <h2 className="text-xl font-semibold">{procedure.name}</h2>
