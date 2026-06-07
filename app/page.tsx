@@ -184,7 +184,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
+    <main className="min-h-screen bg-white text-slate-900">
       <div className="mx-auto max-w-6xl">
         <div className="sticky top-0 z-30 -mx-8 mb-2 border-b border-slate-200 bg-slate-50 px-8 pb-4 pt-4 backdrop-blur">
           <h1 className="mb-1 text-2xl font-bold">Procedure Library</h1>
