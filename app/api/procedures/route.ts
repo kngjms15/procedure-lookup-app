@@ -28,7 +28,11 @@ export async function GET() {
       },
       procedureBookingCategories: {
         include: {
-          bookingCategory: true,
+          bookingCategory: {
+            include: {
+              modality: true,
+            },
+          },
           clinic: true,
         },
       },
@@ -69,6 +73,7 @@ export async function GET() {
 
     bookingCategories: p.procedureBookingCategories.map((pbc) => ({
       name: pbc.bookingCategory.name,
+      modalityName: pbc.bookingCategory.modality?.name || null,
       clinic: pbc.clinic?.name || null,
       isPrimary: pbc.isPrimary,
       bookingCategoryColor: pbc.bookingCategory.bookingCategoryColor || null,

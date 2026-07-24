@@ -54,7 +54,7 @@ export default function ProcedureDetails({
             <section className="min-w-190 border border-slate-200">
               <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                 <div>Clinic</div>
-                <div>Booking Categories</div>
+                <div>Modality: Booking Categories</div>
                 <div>Protocol / Clinic Notes</div>
               </div>
 
@@ -98,6 +98,7 @@ export default function ProcedureDetails({
                           categoriesForClinic.map(
                             (
                               category: {
+                                modalityName: string | null;
                                 bookingCategoryColor: any;
                                 name:
                                   | string
@@ -130,20 +131,32 @@ export default function ProcedureDetails({
                               },
                               categoryIndex: Key | null | undefined,
                             ) => (
-                              <span
+                              <div
                                 key={categoryIndex}
-                                className="border px-2 py-1 text-xs font-medium"
-                                style={{
-                                  backgroundColor:
-                                    category.bookingCategoryColor || "#e2e8f0",
-                                  borderColor:
-                                    category.bookingCategoryColor || "#cbd5e1",
-                                  color: "#1e293b",
-                                }}
+                                className="flex items-center gap-1"
                               >
-                                {category.name}
-                                {category.isPrimary ? " ⭐" : ""}
-                              </span>
+                                {category.modalityName && (
+                                  <span className="text-xs font-semibold text-slate-500">
+                                    {category.modalityName}:
+                                  </span>
+                                )}
+                                <span
+                                  key={categoryIndex}
+                                  className="border px-2 py-1 text-xs font-medium"
+                                  style={{
+                                    backgroundColor:
+                                      category.bookingCategoryColor ||
+                                      "#e2e8f0",
+                                    borderColor:
+                                      category.bookingCategoryColor ||
+                                      "#cbd5e1",
+                                    color: "#1e293b",
+                                  }}
+                                >
+                                  {category.name}
+                                  {category.isPrimary ? " ⭐" : ""}
+                                </span>
+                              </div>
                             ),
                           )
                         ) : (
