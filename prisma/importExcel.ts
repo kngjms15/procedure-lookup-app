@@ -47,8 +47,12 @@ async function main() {
     "ProcedureBookingCategories",
   );
   const radiologistClinics = readSheet(workbook, "RadiologistClinics");
+  const billingCodes = readSheet(workbook, "BillingCodes");
+  const procedureBillingCodes = readSheet(workbook, "ProcedureBillingCodes");
 
   console.log("🧹 Clearing DB...");
+  await prisma.procedureBillingCode.deleteMany();
+  await prisma.billingCode.deleteMany();
   await prisma.procedureBookingCategory.deleteMany();
   await prisma.procedureRadiologist.deleteMany();
   await prisma.procedureClinic.deleteMany();
@@ -66,6 +70,24 @@ async function main() {
       data: {
         id: String(m.ModalityID),
         name: m.ModalityName,
+      },
+    });
+  }
+
+  console.log("💳 Importing Billing Codes...");
+
+  for (const b of billingCodes) {
+    await prisma.billingCode.create({
+      data: {
+        id: String(b.BillingCodeID),
+        modalityAbbrev: val(b.ModalityAbbrev),
+        mspCode: val(b.MSPCode),
+        internalFeeCode: val(b.InternalFeeCode),
+        serviceAbbrev: val(b.ServiceAbbrev),
+        serviceName: val(b.ServiceName),
+        modalityId: val(b.ModalityID),
+        status: val(b.Status),
+        notes: val(b.Notes),
       },
     });
   }
@@ -182,6 +204,20 @@ async function main() {
         bookingCategoryId: String(pbc.BookingCategoryID),
         clinicId: val(pbc.ClinicID),
         isPrimary: boolVal(pbc.IsPrimary),
+        notes: val(pbc.Notes),
+      },
+    });
+  }
+
+  console.log("🔗 Importing ProcedureBillingCodes...");
+
+  for (const pbc of procedureBillingCodes) {
+    await prisma.procedureBillingCode.create({
+      data: {
+        id: String(pbc.ProcedureBillingCodeID),
+        procedureId: String(pbc.ProcedureID),
+        billingCodeId: val(pbc.BillingCodeID),
+        status: val(pbc.Status),
         notes: val(pbc.Notes),
       },
     });

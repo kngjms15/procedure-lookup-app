@@ -21,6 +21,7 @@ model Procedure {
   procedureClinics           ProcedureClinic[]
   procedureRadiologists      ProcedureRadiologist[]
   procedureBookingCategories ProcedureBookingCategory[]
+  procedureBillingCodes      ProcedureBillingCode[]
   rules                      ProcedureRule[]
   aliases                    ProcedureAlias[]
 }
@@ -54,6 +55,7 @@ model Modality {
 
   bookingCategories BookingCategory[]
   procedureClinics  ProcedureClinic[]
+  billingCodes BillingCode[]
 }
 
 model BookingCategory {
@@ -135,4 +137,33 @@ model ProcedureAlias {
   procedure Procedure @relation(fields: [procedureId], references: [id])
 
   @@index([aliasName])
+}
+
+model BillingCode {
+  id               String  @id
+  modalityAbbrev   String?
+  mspCode           String?
+  internalFeeCode  String?
+  serviceAbbrev     String?
+  serviceName       String?
+  modalityId        String?
+  status            String?
+  notes             String?
+
+  modality              Modality?              @relation(fields: [modalityId], references: [id])
+  procedureBillingCodes ProcedureBillingCode[]
+}
+
+model ProcedureBillingCode {
+  id            String  @id
+  procedureId   String
+  billingCodeId String?
+  status        String?
+  notes         String?
+
+  procedure   Procedure    @relation(fields: [procedureId], references: [id])
+  billingCode BillingCode? @relation(fields: [billingCodeId], references: [id])
+
+  @@index([procedureId])
+  @@index([billingCodeId])
 }

@@ -36,6 +36,15 @@ export async function GET() {
           clinic: true,
         },
       },
+      procedureBillingCodes: {
+        include: {
+          billingCode: {
+            include: {
+              modality: true,
+            },
+          },
+        },
+      },
       procedureRadiologists: {
         include: {
           radiologist: true,
@@ -77,6 +86,15 @@ export async function GET() {
       clinic: pbc.clinic?.name || null,
       isPrimary: pbc.isPrimary,
       bookingCategoryColor: pbc.bookingCategory.bookingCategoryColor || null,
+    })),
+
+    billingCodes: p.procedureBillingCodes.map((pbc) => ({
+      billingCodeId: pbc.billingCode?.id ?? null,
+      internalFeeCode: pbc.billingCode?.internalFeeCode ?? null,
+      serviceName: pbc.billingCode?.serviceName ?? null,
+      modalityName: pbc.billingCode?.modality?.name ?? null,
+      status: pbc.status,
+      notes: pbc.notes,
     })),
 
     radiologists: p.procedureRadiologists.map((pr) => ({

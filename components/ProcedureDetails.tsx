@@ -6,6 +6,7 @@ import {
   Key,
 } from "react";
 import ClinicChip from "./ClinicChip";
+import BillingCodeSection from "./BillingCodeSection";
 
 type ProcedureDetailsProps = {
   selectedProcedure: any;
@@ -51,6 +52,7 @@ export default function ProcedureDetails({
 
         <div className="grid items-start gap-4 lg:grid-cols-[1fr_280px]">
           <div className="w-full overflow-x-auto">
+            <BillingCodeSection billingCodes={selectedProcedure.billingCodes} />
             <section className="min-w-190 border border-slate-200">
               <div className="grid grid-cols-[200px_1fr_1fr] border-b border-slate-200 bg-slate-200 px-4 py-2 text-sm font-semibold">
                 <div>Clinic</div>
