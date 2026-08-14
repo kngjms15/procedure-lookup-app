@@ -260,10 +260,20 @@ export default function ProcedureDetails({
                           borderLeftColor: r.genderColor || "#cbd5e1",
                         }}
                       >
-                        <span className="font-medium">{r.name}</span>
+                        <div className="flex min-w-0 items-start gap-2">
+                          <span className="whitespace-nowrap font-medium">
+                            {r.name}
+                          </span>
+
+                          {r.notes && (
+                            <span className="min-w-0 whitespace-normal wrap-break-word text-xs italic leading-tight text-slate-500">
+                              {r.notes}
+                            </span>
+                          )}
+                        </div>
 
                         {r.city && (
-                          <div className="group relative ml-3">
+                          <div className="group relative ml-3 shrink-0">
                             <span className="whitespace-nowrap text-xs text-slate-400">
                               {r.city}
                             </span>
