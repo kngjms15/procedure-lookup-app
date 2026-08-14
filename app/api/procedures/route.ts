@@ -77,6 +77,7 @@ export async function GET() {
         name: rc.radiologist.name,
         status: rc.status,
         genderColor: rc.radiologist.genderColor || null,
+        city: rc.radiologist.city || null,
       })),
     })),
 
@@ -102,6 +103,8 @@ export async function GET() {
       status: pr.status,
       notes: pr.notes,
       genderColor: pr.radiologist.genderColor || null,
+      city: pr.radiologist.city || null,
+      homeClinic: pr.radiologist.notes || null,
     })),
   }));
 

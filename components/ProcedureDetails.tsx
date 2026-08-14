@@ -92,6 +92,7 @@ export default function ProcedureDetails({
                           clinicName={clinic.clinic}
                           city={clinic.city}
                           radiologists={matchingRadiologists}
+                          tooltipPosition="bottom"
                         />
                       </div>
 
@@ -193,6 +194,8 @@ export default function ProcedureDetails({
                     (
                       r: {
                         genderColor: any;
+                        city: string | null;
+                        homeClinic: string | null;
                         name:
                           | string
                           | number
@@ -259,10 +262,18 @@ export default function ProcedureDetails({
                       >
                         <span className="font-medium">{r.name}</span>
 
-                        {r.notes && (
-                          <span className="ml-2 text-xs italic text-slate-500">
-                            {r.notes}
-                          </span>
+                        {r.city && (
+                          <div className="group relative ml-3">
+                            <span className="whitespace-nowrap text-xs text-slate-400">
+                              {r.city}
+                            </span>
+
+                            {r.homeClinic && (
+                              <div className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 hidden whitespace-nowrap rounded bg-slate-800 px-2 py-1 text-xs text-white shadow-lg group-hover:block">
+                                Home Clinic: {r.homeClinic}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     ),

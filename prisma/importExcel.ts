@@ -113,6 +113,7 @@ async function main() {
         status: val(r.Status),
         notes: val(r.HomeClinicCode),
         genderColor: r.GenderColor || null,
+        city: val(r.City),
       },
       create: {
         id: String(r.RadiologistID),
@@ -120,6 +121,7 @@ async function main() {
         status: val(r.Status),
         notes: val(r.HomeClinicCode),
         genderColor: r.GenderColor || null,
+        city: val(r.City),
       },
     });
   }

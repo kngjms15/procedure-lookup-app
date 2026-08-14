@@ -43,6 +43,7 @@ model Radiologist {
   status      String?
   notes       String?
   genderColor String?
+  city        String?
 
   procedureRadiologists ProcedureRadiologist[]
   radiologistClinics    RadiologistClinic[]
