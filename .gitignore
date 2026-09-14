@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Local source data - do not commit
+/procedure_lookup_project.xlsx
+
 /app/generated/prisma
